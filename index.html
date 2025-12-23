@@ -52,18 +52,142 @@
     </style>
   </head>
   <body>
-    <h1>Pygame-CE Demo in PyScript</h1>
-    <canvas id="canvas" width="640" height="480"></canvas>
+    <h1 id="title">&nbsp;</h1>
+    <canvas id="canvas" width="480" height="360"></canvas>
     <div class="controls">
       <button id="resetBtn">Reset Game</button>
       <button id="pauseBtn">Pause</button>
     </div>
-    <div class="info">
-      <p>Use arrow keys to move the paddle</p>
-      <p>Break all the blocks to win!</p>
-    </div>
+    <div class="info" id="info">&nbsp;</div>
 
     <script type="py-game" src="main.py" config="pyscript.toml"></script>
+
+    <!-- Canvas Splash Screen -->
+    <script>
+      window.addEventListener('py:all-done', () => {
+        console.log('everything is done');
+      });
+
+      window.addEventListener('py:progress', (event) => {
+        console.log('progress', event.detail);
+      });
+      (function () {
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        // Use fixed dimensions to avoid issues if Pygame resizes canvas
+        const width = 480;
+        const height = 360;
+
+        // Animation state
+        let animationId = null;
+        let startTime = Date.now();
+        let logoLoaded = false;
+        let logoImage = null;
+
+        // Load the SVG logo as an image
+        const logoImg = new Image();
+        logoImg.onload = function () {
+          logoLoaded = true;
+          logoImage = logoImg;
+        };
+        logoImg.src = 'img/pygame_ce_logo.svg';
+
+        // Colors
+        const bgColor = '#1a1a1a';
+        const green = '#4caf50';
+        const greenDark = '#45a049';
+        const white = '#ffffff';
+
+        // Draw splash screen frame
+        function drawSplash() {
+          // Clear and fill background
+          ctx.fillStyle = bgColor;
+          ctx.fillRect(0, 0, width, height);
+
+          const elapsed = Date.now() - startTime;
+
+          // Draw logo (scaled down to fit)
+          const logoWidth = 300;
+          const logoHeight = 150;
+          const logoX = (width - logoWidth) / 2;
+          const logoY = height / 2 - 90;
+
+          if (logoLoaded && logoImage) {
+            ctx.drawImage(logoImage, logoX, logoY, logoWidth, logoHeight);
+          } else {
+            // Fallback text if logo not loaded
+            ctx.fillStyle = green;
+            ctx.font = 'bold 36px Roboto';
+            ctx.textAlign = 'center';
+            ctx.fillText('Pygame CE', width / 2, height / 2 - 50);
+          }
+
+          // Draw "Loading Pygame..." text with blinking effect
+          const blinkAlpha = 0.5 + 0.5 * Math.sin(elapsed * 0.004);
+          ctx.fillStyle = green;
+          ctx.globalAlpha = blinkAlpha;
+          ctx.font = '24px Roboto, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('Loading Pygame...', width / 2, height / 2 + 110);
+          ctx.globalAlpha = 1;
+
+          // Draw animated loading bar
+          const barWidth = 200;
+          const barHeight = 6;
+          const barX = (width - barWidth) / 2;
+          const barY = height / 2 + 140;
+
+          // Bar background
+          ctx.fillStyle = '#333';
+          ctx.beginPath();
+          ctx.roundRect(barX, barY, barWidth, barHeight, 3);
+          ctx.fill();
+
+          // Animated indicator
+          const indicatorWidth = 40;
+          const indicatorX = barX + ((elapsed * 0.2) % (barWidth - indicatorWidth));
+          ctx.fillStyle = green;
+          ctx.beginPath();
+          ctx.roundRect(indicatorX, barY, indicatorWidth, barHeight, 3);
+          ctx.fill();
+        }
+
+        // Animation loop
+        function animate() {
+          drawSplash();
+          animationId = requestAnimationFrame(animate);
+        }
+
+        // Start animation
+        animate();
+
+        // Function to stop splash screen
+        function stopSplash() {
+          if (animationId) {
+            cancelAnimationFrame(animationId);
+            animationId = null;
+          }
+          // Clear canvas for Pygame
+          ctx.fillStyle = 'black';
+          ctx.fillRect(0, 0, width, height);
+        }
+
+        // Listen for PyScript ready event
+        window.addEventListener('py:progress', (event) => {
+          console.log('progress', event.detail);
+          if (event.detail.includes('Loaded Pyodide')) {
+            // Pygame-CE is loaded, stop the splash
+            stopSplash();
+          }
+        });
+
+        // Fallback timeout
+        setTimeout(function () {
+          if (animationId) {
+            stopSplash();
+          }
+        }, 5000);
+      })();
+    </script>
   </body>
 </html>
-

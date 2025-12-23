@@ -2,9 +2,13 @@ import pygame
 import random
 import math
 
+# Module metadata
+title = "Breakout Game"
+info = "Classic brick-breaking game. Use <strong>LEFT/RIGHT arrow keys</strong> to move the paddle. Break all blocks to win!"
+
 # Game constants
-SCREEN_WIDTH = 640
-SCREEN_HEIGHT = 480
+SCREEN_WIDTH = 480
+SCREEN_HEIGHT = 360
 FPS = 60
 
 # Colors
@@ -28,27 +32,27 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Breakout Game")
 
 # Paddle
-paddle_width = 100
-paddle_height = 10
-paddle_speed = 8
+paddle_width = 75
+paddle_height = 8
+paddle_speed = 6
 paddle_x = (SCREEN_WIDTH - paddle_width) // 2
-paddle_y = SCREEN_HEIGHT - 30
+paddle_y = SCREEN_HEIGHT - 23
 
 # Ball
-ball_size = 8
-ball_speed_x = 4
-ball_speed_y = -4
+ball_size = 6
+ball_speed_x = 3
+ball_speed_y = -3
 ball_x = SCREEN_WIDTH // 2
-ball_y = SCREEN_HEIGHT - 40
+ball_y = SCREEN_HEIGHT - 30
 
 # Blocks
 block_rows = 5
 block_cols = 10
-block_width = 50
-block_height = 20
-block_padding = 5
-block_offset_top = 60
-block_offset_left = 35
+block_width = 38
+block_height = 15
+block_padding = 4
+block_offset_top = 45
+block_offset_left = 26
 
 # Create blocks with different colors for different rows
 blocks = []
@@ -62,9 +66,9 @@ for row in range(block_rows):
         blocks.append((block_rect, block_colors[row]))
 
 # Fonts
-font_large = pygame.font.Font(None, 48)
-font_medium = pygame.font.Font(None, 36)
-font_small = pygame.font.Font(None, 24)
+font_large = pygame.font.Font(None, 36)
+font_medium = pygame.font.Font(None, 27)
+font_small = pygame.font.Font(None, 18)
 
 
 def reset_game():
@@ -75,9 +79,9 @@ def reset_game():
 
     # Reset ball
     ball_x = SCREEN_WIDTH // 2
-    ball_y = SCREEN_HEIGHT - 40
-    ball_speed_x = 4 * random.choice([-1, 1])
-    ball_speed_y = -4
+    ball_y = SCREEN_HEIGHT - 30
+    ball_speed_x = 3 * random.choice([-1, 1])
+    ball_speed_y = -3
 
     # Reset blocks
     blocks = []
@@ -130,7 +134,7 @@ def update():
             ball_speed_y = -ball_speed_y
             # Add some spin based on where the ball hits the paddle
             hit_pos = (ball_x - paddle_x) / paddle_width
-            ball_speed_x = 8 * (hit_pos - 0.5)
+            ball_speed_x = 6 * (hit_pos - 0.5)
 
         # Ball collision with blocks
         blocks_to_remove = []
@@ -171,9 +175,7 @@ def draw():
     # Draw status text
     if game_paused:
         pause_text = font_large.render("PAUSED", True, WHITE)
-        text_rect = pause_text.get_rect(
-            center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
-        )
+        text_rect = pause_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
         screen.blit(pause_text, text_rect)
     elif game_over:
         game_over_text = font_large.render("GAME OVER", True, RED)

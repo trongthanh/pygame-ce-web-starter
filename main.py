@@ -1,7 +1,9 @@
 import asyncio
 import sys
 import pygame
+
 import breakout
+import drawing
 from pyscript import when
 from pyscript.web import page
 
@@ -13,6 +15,18 @@ game = breakout
 
 # Global pause state
 game_paused = False
+
+# Update DOM elements with game metadata
+if hasattr(game, "title"):
+    title_elem = page.find("#title")
+    print(game.title, title_elem)
+    if title_elem:
+        title_elem.textContent = game.title
+
+if hasattr(game, "info"):
+    info_elem = page.find("#info")
+    if info_elem:
+        info_elem.innerHTML = game.info
 
 
 async def main_loop():
