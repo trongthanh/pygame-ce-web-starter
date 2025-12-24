@@ -33,7 +33,7 @@
 
   "postCreateCommand": "bash -c 'curl -LsSf https://astral.sh/uv/install.sh | sh && export PATH=\"$HOME/.local/bin:$PATH\" && uv sync'",
 
-  "postStartCommand": "nohup python -m http.server 8000 > /tmp/server.log 2>&1 &",
+  "postStartCommand": "uv run -m http.server 8000 > /tmp/server.log 2>&1",
 
   "remoteUser": "vscode"
 }
