@@ -2,8 +2,7 @@ import asyncio
 import sys
 import pygame
 
-import breakout
-import drawing
+import chrome_dino
 from pyscript import when
 from pyscript.web import page
 
@@ -11,7 +10,7 @@ pygame.init()
 pygame.font.init()
 
 # Global reference for the game module
-game = breakout
+game = chrome_dino
 
 # Global pause state
 game_paused = False
