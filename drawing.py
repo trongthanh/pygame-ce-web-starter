@@ -3,7 +3,7 @@ import math
 
 # Module metadata
 title = "Pygame Drawing API Demo"
-info = "Demonstrates pygame.draw functions: circles, rectangles, lines, ellipses, polygons, and arcs.<br> Automatically cycles through demos every 3 seconds."
+info = "Demonstrates pygame.draw functions: circles, rectangles, lines, ellipses, polygons, and arcs.<br> Use LEFT/RIGHT arrows to navigate between demos."
 
 size = width, height = 480, 360
 black = 0, 0, 0
@@ -23,8 +23,6 @@ small_font = pygame.font.Font(None, 18)
 
 # Animation state
 demo_index = 0
-frame_counter = 0
-demos_per_scene = 180  # frames per demo (3 seconds at 60fps)
 
 # Circle animation
 circle_angle = 0
@@ -44,32 +42,64 @@ ellipse_scale = 1.0
 paused = False
 paused_demos = False
 
+# Key debouncing for demo switching
+left_key_pressed = False
+right_key_pressed = False
+
 
 def update():
-    global frame_counter, demo_index, circle_angle, rect_x, poly_angle, line_y, ellipse_scale
+    global circle_angle, rect_x, poly_angle, line_y, ellipse_scale
+    global demo_index, left_key_pressed, right_key_pressed
+
+    # Handle demo navigation with key debouncing
+    keys = pygame.key.get_pressed()
+
+    if keys[pygame.K_LEFT]:
+        if not left_key_pressed:
+            # Go to previous demo
+            demo_index = (demo_index - 1) % 6
+            # Reset animation states when switching
+            circle_angle = 0
+            rect_x = 0
+            poly_angle = 0
+            line_y = 0
+            ellipse_scale = 1.0
+            left_key_pressed = True
+    else:
+        left_key_pressed = False
+
+    if keys[pygame.K_RIGHT]:
+        if not right_key_pressed:
+            # Go to next demo
+            demo_index = (demo_index + 1) % 6
+            # Reset animation states when switching
+            circle_angle = 0
+            rect_x = 0
+            poly_angle = 0
+            line_y = 0
+            ellipse_scale = 1.0
+            right_key_pressed = True
+    else:
+        right_key_pressed = False
 
     if paused:
         return
 
-    frame_counter += 1
-
-    # Switch demos every 3 seconds
-    if frame_counter >= demos_per_scene:
-        frame_counter = 0
-        demo_index = (demo_index + 1) % 7
-        # Reset animation states
-        circle_angle = 0
-        rect_x = 0
-        poly_angle = 0
-        line_y = 0
-        ellipse_scale = 1.0
-
-    # Update animations
-    circle_angle += 0.05
-    rect_x = (rect_x + 3) % (width - 50)
-    poly_angle += 0.03
-    line_y = (line_y + 2) % height
-    ellipse_scale = 1.0 + 0.3 * math.sin(circle_angle * 2)
+    # Update animations only for the active demo
+    if demo_index == 0:  # Circles
+        circle_angle += 0.05
+        ellipse_scale = 1.0 + 0.3 * math.sin(circle_angle * 2)
+    elif demo_index == 1:  # Rectangles
+        rect_x = (rect_x + 3) % (width - 50)
+    elif demo_index == 2:  # Lines
+        line_y = (line_y + 2) % height
+    elif demo_index == 3:  # Ellipses
+        circle_angle += 0.05
+        ellipse_scale = 1.0 + 0.3 * math.sin(circle_angle * 2)
+    elif demo_index == 4:  # Polygons
+        poly_angle += 0.03
+    elif demo_index == 5:  # Arcs
+        circle_angle += 0.05
 
 
 def draw_demo_title(title, subtitle=""):
@@ -221,8 +251,8 @@ def draw():
 
         instructions = [
             f"Current demo: {demo_index + 1}/{len(demos)}",
-            "Press SPACE to pause/resume demo rotation",
-            "Press LEFT/RIGHT to change demo manually",
+            "Press SPACE to pause/resume animation",
+            "Press LEFT/RIGHT to change demo",
             "Press R to reset",
         ]
 
@@ -252,9 +282,8 @@ def gray(value):
 
 
 def reset_game():
-    global demo_index, frame_counter, circle_angle, rect_x, poly_angle, line_y, ellipse_scale
+    global demo_index, circle_angle, rect_x, poly_angle, line_y, ellipse_scale
     demo_index = 0
-    frame_counter = 0
     circle_angle = 0
     rect_x = 0
     poly_angle = 0

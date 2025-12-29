@@ -2,7 +2,8 @@ import asyncio
 import sys
 import pygame
 
-import chrome_dino
+# import chrome_dino
+import drawing
 from pyscript import when
 from pyscript.web import page
 
@@ -10,7 +11,7 @@ pygame.init()
 pygame.font.init()
 
 # Global reference for the game module
-game = chrome_dino
+game = drawing
 
 # Global pause state
 game_paused = False
@@ -33,6 +34,10 @@ async def main_loop():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
+
+            # Pass events to game module if it has an event handler
+            if hasattr(game, "handle_event") and callable(game.handle_event):
+                game.handle_event(event)
 
         if getattr(game, "update", False) and callable(game.update):
             game.update()
