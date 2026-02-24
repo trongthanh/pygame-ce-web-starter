@@ -1,5 +1,7 @@
 [files]
-
+"img/space_invader_sprites.png" = ""
 "drawing.py" = ""
 "breakout.py" = ""
 "chrome_dino.py" = ""
+"space_invaders.py" = ""
+"blank.py" = ""

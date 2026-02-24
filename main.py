@@ -1,17 +1,44 @@
 import asyncio
+import io
 import sys
 import pygame
+from js import document
 
 # import chrome_dino
-import drawing
+# import drawing
+import space_invaders
 from pyscript import when
 from pyscript.web import page
 
 pygame.init()
 pygame.font.init()
 
+
+# Redirect stdout to the python-log textarea
+class TextAreaWriter(io.TextIOBase):
+    def __init__(self, elem, orig):
+        self._elem = elem
+        self._orig = orig
+
+    def write(self, text):
+        if self._orig:
+            self._orig.write(text)
+        if text:
+            self._elem.value += text
+            self._elem.scrollTop = self._elem.scrollHeight
+        return len(text)
+
+    def flush(self):
+        if self._orig:
+            self._orig.flush()
+
+
+_log_elem = document.querySelector("#python-log")
+if _log_elem:
+    sys.stdout = TextAreaWriter(_log_elem, sys.stdout)
+
 # Global reference for the game module
-game = drawing
+game = space_invaders
 
 # Global pause state
 game_paused = False
@@ -19,7 +46,7 @@ game_paused = False
 # Update DOM elements with game metadata
 if hasattr(game, "title"):
     title_elem = page.find("#title")
-    print(game.title, title_elem)
+    print(game.title)
     if title_elem:
         title_elem.textContent = game.title
 
@@ -34,10 +61,6 @@ async def main_loop():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
-
-            # Pass events to game module if it has an event handler
-            if hasattr(game, "handle_event") and callable(game.handle_event):
-                game.handle_event(event)
 
         if getattr(game, "update", False) and callable(game.update):
             game.update()
