@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>PyScript Pygame-CE Demo</title>
-    <link rel="stylesheet" href="https://pyscript.net/releases/2025.11.2/core.css" />
-    <script type="module" src="https://pyscript.net/releases/2025.11.2/core.js"></script>
+    <link rel="stylesheet" href="https://pyscript.net/releases/2026.2.1/core.css" />
+    <script type="module" src="https://pyscript.net/releases/2026.2.1/core.js"></script>
     <style>
       body {
         margin: 0;
@@ -142,12 +142,13 @@
       window.addEventListener('py:progress', (event) => {
         console.log('progress', event.detail);
         if (event.detail.includes('Loaded Pyodide')) {
-          removeSplash();
+          // removeSplash();
+          // called from main.py
         }
       });
 
       // Fallback timeout
-      setTimeout(removeSplash, 10000);
+      // setTimeout(removeSplash, 10000);
     </script>
   </body>
 </html>

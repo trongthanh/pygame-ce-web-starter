@@ -43,4 +43,8 @@ class Page:
         """Find all elements matching CSS selector."""
         ...
 
+    def __getitem__(self, id: str) -> Element:
+        """Access an element by ID. Accepts bare IDs ('title') or with '#' prefix ('#title')."""
+        ...
+
 page: Page

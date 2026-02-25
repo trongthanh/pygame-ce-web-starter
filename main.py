@@ -2,16 +2,12 @@ import asyncio
 import io
 import sys
 import pygame
-from js import document
 
 # import chrome_dino
 # import drawing
 import space_invaders
 from pyscript import when
 from pyscript.web import page
-
-pygame.init()
-pygame.font.init()
 
 
 # Redirect stdout to the python-log textarea
@@ -33,9 +29,11 @@ class TextAreaWriter(io.TextIOBase):
             self._orig.flush()
 
 
-_log_elem = document.querySelector("#python-log")
-if _log_elem:
-    sys.stdout = TextAreaWriter(_log_elem, sys.stdout)
+if page["#python-log"]:
+    sys.stdout = TextAreaWriter(page["#python-log"], sys.stdout)
+
+pygame.init()
+pygame.font.init()
 
 # Global reference for the game module
 game = space_invaders
@@ -45,13 +43,13 @@ game_paused = False
 
 # Update DOM elements with game metadata
 if hasattr(game, "title"):
-    title_elem = page.find("#title")
+    title_elem = page["#title"]
     print(game.title)
     if title_elem:
         title_elem.textContent = game.title
 
 if hasattr(game, "info"):
-    info_elem = page.find("#info")
+    info_elem = page["#info"]
     if info_elem:
         info_elem.innerHTML = game.info
 
@@ -86,10 +84,14 @@ def toggle_pause(event):
         game.set_pause(game_paused)
 
     # Update button text
-    pause_btn = page.find("#pauseBtn")
+    pause_btn = page["#pauseBtn"]
     if pause_btn:
         pause_btn.textContent = "Resume" if game_paused else "Pause"
 
+
+# Hide Splash Screen
+splash_elem = page["#splash-overlay"]
+splash_elem.remove()
 
 # Start the game loop
 asyncio.run(main_loop())
